@@ -80,7 +80,7 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 
 <div class="upload-top">
 <section class="panel">
-<div class="drop" id="drop"><input id="files" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/bmp" hidden>
+<div class="drop" id="drop"><input id="files" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/bmp,application/pdf,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" hidden>
 <div style="font-size:34px">↑</div><strong>Drop your files here</strong><p>or click to browse</p></div>
 </section>
 </div>
@@ -94,6 +94,8 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 <button class="tool" data-tool="id"><b>▣ ID Photo</b><small>Pixel-size presets</small></button>
 <button class="tool" data-tool="pdf"><b>▤ Image → PDF</b><small>Multiple images</small></button>
 <button class="tool" data-tool="office"><b>▥ Office → PDF</b><small>Word · PPT · Excel</small></button>
+<button class="tool" data-tool="pdfcompress"><b>⇩ Compress PDF</b><small>Reduce PDF file size</small></button>
+<button class="tool" data-tool="pdftoppt"><b>▣ PDF → PPT</b><small>Convert PDF to PowerPoint</small></button>
 </div>
 
 <div class="ad">ADVERTISEMENT</div>
@@ -135,7 +137,29 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 
 <div id="pdf" class="hidden"><h3>Images → PDF</h3><div class="row"><select id="page"><option>A4</option><option>Letter</option></select><select id="orientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select><button id="pdfGo">Create PDF</button></div></div>
 
-<div id="office" class="hidden"><h3>Word / PowerPoint / Excel → PDF</h3><p class="hint">Conversion uses LibreOffice on your own server/computer.</p><input id="officeFiles" type="file" multiple accept=".doc,.docx,.ppt,.pptx,.xls,.xlsx"><p><button id="officeGo">Convert to PDF</button></p><div id="officeStatus" class="status"></div></div>
+<div id="office" class="hidden"><h3>Word / PowerPoint / Excel → PDF</h3>
+<p class="hint">Modern <b>.docx</b>, <b>.xlsx</b> and <b>.pptx</b> files are converted in your browser. No upload is required. Older .doc/.xls files need a server converter.</p>
+<input id="officeFiles" type="file" multiple accept=".doc,.docx,.ppt,.pptx,.xls,.xlsx">
+<p><button id="officeGo">Convert to PDF</button></p>
+<div id="officeStatus" class="status"></div></div>
+<div id="pdfcompress" class="hidden"><h3>Compress PDF</h3>
+<p class="hint">Compress one PDF directly in your browser. This works especially well for scanned/photo PDFs. Text/vector PDFs may have limited size reduction.</p>
+<div class="row"><label>PDF file <input id="pdfCompressFile" type="file" accept="application/pdf"></label></div>
+<div class="row">
+<label>Reduce by <input id="pdfReduce" type="number" min="1" max="90" value="50"> %</label>
+<label>Target size <input id="pdfTargetKB" type="number" min="1" step="1" placeholder="Optional KB"> KB</label>
+</div>
+<p class="hint">Enter a percentage for automatic compression, or enter a target size in KB. If both are entered, the target KB is used.</p>
+<p><button id="pdfCompressGo">Compress & Download PDF</button></p>
+<div class="status" id="pdfCompressStatus"></div>
+</div>
+<div id="pdftoppt" class="hidden"><h3>PDF → PowerPoint</h3>
+<p class="hint">Convert each PDF page into a PowerPoint slide. The slide preserves the page appearance as an image, making this suitable for scanned documents and PDFs with mixed content.</p>
+<div class="row"><label>PDF file <input id="pdfToPptFile" type="file" accept="application/pdf"></label></div>
+<div class="row"><label>Image quality <select id="pptQuality"><option value="1.5">Standard</option><option value="2">High</option><option value="1">Smaller file</option></select></label>
+<button id="pdfToPptGo">Convert & Download PPT</button></div>
+<div class="status" id="pdfToPptStatus"></div>
+</div>
 <div class="status" id="status"></div>
 </div>
 </section>
@@ -198,6 +222,11 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 </main>
 <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module"></script>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 let files=[], activeIndex=0, img=null, cropper=null;
@@ -210,12 +239,60 @@ drop.addEventListener('drop',e=>load([...e.dataTransfer.files]));
 input.onchange=e=>load([...e.target.files]);
 
 function load(a){
-  files=a.filter(f=>f && f.type && f.type.startsWith('image/'));
-  $('#workspace').classList.toggle('hidden',!files.length);
-  $('#info').textContent=files.length+' image(s) selected';
-  renderGallery();
-  if(files.length) selectImage(0);
-  if(a.length && !files.length) $('#info').textContent='No browser-supported image selected. JPG, PNG, WebP and GIF work best.';
+  const selected = a.filter(f => f && f.name);
+  const images = selected.filter(f => f.type && f.type.startsWith('image/'));
+  const pdfs = selected.filter(f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name));
+  const office = selected.filter(f => /\.(doc|docx|ppt|pptx|xls|xlsx)$/i.test(f.name));
+
+  // Images continue to use the existing image workspace.
+  if(images.length){
+    files = images;
+    activeIndex = 0;
+    $('#workspace').classList.remove('hidden');
+    $('#info').textContent = images.length+' image(s) selected';
+    renderGallery();
+    selectImage(0);
+    activate('resize');
+    $('#status').textContent = office.length || pdfs.length
+      ? 'Image files loaded. PDF/Office files are handled by their dedicated tools.'
+      : '';
+  }
+
+  // A PDF dropped/selected in the main box is sent directly to Compress PDF.
+  if(pdfs.length){
+    const pdf = pdfs[0];
+    $('#pdfCompressFile').files = (() => {
+      const dt = new DataTransfer();
+      dt.items.add(pdf);
+      return dt.files;
+    })();
+    activate('pdfcompress');
+    $('#workspace').classList.remove('hidden');
+    $('#pdfCompressStatus').textContent =
+      pdfs.length > 1 ? pdf.name+' selected (one PDF at a time for compression).' : pdf.name+' selected.';
+  }
+
+  // Office files are sent to the Office → PDF picker. The actual conversion
+  // still requires the server endpoint used by this page.
+  if(office.length){
+    const dt = new DataTransfer();
+    office.forEach(f => dt.items.add(f));
+    $('#officeFiles').files = dt.files;
+    activate('office');
+    $('#workspace').classList.remove('hidden');
+    $('#officeStatus').textContent =
+      office.length+' Office file(s) selected. Tap "Convert to PDF".';
+  }
+
+  if(!selected.length){
+    $('#workspace').classList.add('hidden');
+    $('#info').textContent='No file selected.';
+  }
+
+  if(selected.length && !images.length && !pdfs.length && !office.length){
+    $('#workspace').classList.remove('hidden');
+    $('#info').textContent='Unsupported file. Use JPG, PNG, WebP, GIF, BMP, PDF, Word, PowerPoint or Excel.';
+  }
 }
 function renderGallery(){
   const g=$('#gallery'); g.innerHTML='';
@@ -251,7 +328,7 @@ function setupCrop(src){
 }
 function activate(n){
   $$('.tool').forEach(x=>x.classList.toggle('active',x.dataset.tool===n));
-  ['resize','compress','crop','convert','enhance','id','pdf','office'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==n));
+  ['resize','compress','crop','convert','enhance','id','pdf','office','pdfcompress','pdftoppt'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==n));
 }
 $$('.tool').forEach(x=>x.onclick=()=>activate(x.dataset.tool));
 
@@ -359,11 +436,287 @@ $('#pdfGo').onclick=async()=>{
     p.addImage(d,'JPEG',(pw-w)/2,(ph-h)/2,w,h);
   }p.save('images.pdf');
 };
+async function docxToPdf(file, p){
+  const arrayBuffer=await file.arrayBuffer();
+  const result=await mammoth.convertToHtml({arrayBuffer});
+  const holder=document.createElement('div');
+  holder.innerHTML=result.value;
+  holder.style.cssText='position:fixed;left:-10000px;top:0;width:720px;background:#fff;color:#111;padding:20px;font:12px Arial;line-height:1.5';
+  document.body.appendChild(holder);
+  const lines=[];
+  holder.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,td,th').forEach(el=>{
+    const t=(el.innerText||'').trim();
+    if(t) lines.push({text:t,bold:/^h[1-6]$|^th$/i.test(el.tagName),size:/^h1$/i.test(el.tagName)?18:/^h2$/i.test(el.tagName)?15:/^h[3-6]$/i.test(el.tagName)?13:11});
+  });
+  const pageW=p.internal.pageSize.getWidth(), pageH=p.internal.pageSize.getHeight(), margin=36;
+  let y=margin;
+  for(const item of lines){
+    const chunks=p.splitTextToSize(item.text,pageW-margin*2);
+    p.setFont('helvetica',item.bold?'bold':'normal'); p.setFontSize(item.size);
+    for(const line of chunks){
+      if(y>pageH-margin){p.addPage();y=margin}
+      p.text(line,margin,y);y+=item.size+5;
+    }
+    y+=3;
+  }
+  document.body.removeChild(holder);
+}
+
+async function xlsxToPdf(file,p){
+  const data=await file.arrayBuffer();
+  const wb=XLSX.read(data,{type:'array'});
+  const pageW=p.internal.pageSize.getWidth(), pageH=p.internal.pageSize.getHeight(), margin=24;
+  for(let si=0;si<wb.SheetNames.length;si++){
+    if(si)p.addPage();
+    const ws=wb.Sheets[wb.SheetNames[si]];
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+    const maxCols=Math.min(10,Math.max(1,...rows.map(r=>r.length)));
+    const usableW=pageW-margin*2, colW=usableW/maxCols, rowH=18;
+    let y=margin+12;
+    p.setFont('helvetica','bold');p.setFontSize(13);p.text(wb.SheetNames[si],margin,y);y+=20;
+    p.setFontSize(7);
+    for(const row of rows){
+      if(y>pageH-margin){p.addPage();y=margin}
+      for(let c=0;c<maxCols;c++){
+        const text=String(row[c]??'').replace(/\s+/g,' ').slice(0,55);
+        p.rect(margin+c*colW,y-rowH+3,colW,rowH);
+        p.text(p.splitTextToSize(text,colW-4)[0]||'',margin+c*colW+2,y-3);
+      }
+      y+=rowH;
+    }
+  }
+}
+
+async function pptxToPdf(file,p){
+  const zip=await JSZip.loadAsync(await file.arrayBuffer());
+  const slideFiles=Object.keys(zip.files).filter(x=>/^ppt\/slides\/slide\d+\.xml$/i.test(x))
+    .sort((a,b)=>parseInt(a.match(/\d+/)[0])-parseInt(b.match(/\d+/)[0]));
+  const pageW=p.internal.pageSize.getWidth(),pageH=p.internal.pageSize.getHeight(),margin=40;
+  for(let s=0;s<slideFiles.length;s++){
+    if(s)p.addPage('a4','landscape');
+    const xml=await zip.files[slideFiles[s]].async('text');
+    const doc=new DOMParser().parseFromString(xml,'application/xml');
+    const texts=[...doc.getElementsByTagNameNS('*','t')].map(x=>x.textContent.trim()).filter(Boolean);
+    let y=margin;
+    p.setFont('helvetica','normal');p.setFontSize(16);
+    for(const t of texts){
+      const lines=p.splitTextToSize(t,pageW-margin*2);
+      for(const line of lines){
+        if(y>pageH-margin){p.addPage('a4','landscape');y=margin}
+        p.text(line,margin,y);y+=22;
+      }
+      y+=10;
+    }
+    if(!texts.length){p.setFontSize(12);p.text('This slide contains content that could not be converted to text.',margin,y)}
+  }
+}
+
 $('#officeGo').onclick=async()=>{
-  let a=[...$('#officeFiles').files];if(!a.length)return alert('Choose Office files');
-  let fd=new FormData();a.forEach(f=>fd.append('files',f));$('#officeStatus').textContent='Converting…';
-  try{let r=await fetch('/api/office-to-pdf',{method:'POST',body:fd});if(!r.ok)throw Error(await r.text());download(await r.blob(),'converted.pdf');$('#officeStatus').textContent='PDF ready.'}
-  catch(e){$('#officeStatus').textContent='Conversion unavailable: '+e.message}
+  const a=[...$('#officeFiles').files];
+  if(!a.length)return alert('Choose Word, PowerPoint or Excel files');
+  $('#officeGo').disabled=true;
+  try{
+    const {jsPDF}=window.jspdf;
+    let p=null;
+    for(let n=0;n<a.length;n++){
+      const f=a[n], ext=f.name.split('.').pop().toLowerCase();
+      $('#officeStatus').textContent=`Converting ${n+1} of ${a.length}: ${f.name}…`;
+      if(!p)p=new jsPDF({unit:'pt',format:'a4'});
+      else p.addPage('a4','portrait');
+      if(ext==='docx') await docxToPdf(f,p);
+      else if(ext==='xlsx') await xlsxToPdf(f,p);
+      else if(ext==='pptx') await pptxToPdf(f,p);
+      else throw new Error('This browser version supports .docx, .xlsx and .pptx. Older Office formats need server conversion.');
+    }
+    const blob=p.output('blob');
+    download(blob,'converted-office-files.pdf');
+    $('#officeStatus').textContent='PDF ready — converted in your browser.';
+  }catch(e){
+    console.error(e);
+    $('#officeStatus').textContent=e.message||'Conversion failed.';
+  }finally{$('#officeGo').disabled=false}
+};
+</script>
+
+<script type="module">
+import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
+
+const pdfInput = document.getElementById('pdfCompressFile');
+const reduceInput = document.getElementById('pdfReduce');
+const targetInput = document.getElementById('pdfTargetKB');
+const compressBtn = document.getElementById('pdfCompressGo');
+const compressStatus = document.getElementById('pdfCompressStatus');
+
+async function buildPdfFromImages(pdfBytes, scale, quality) {
+  const pdf = await pdfjsLib.getDocument({data: pdfBytes}).promise;
+  const {jsPDF} = window.jspdf;
+  let output = null;
+
+  for (let n = 1; n <= pdf.numPages; n++) {
+    compressStatus.textContent = `Compressing page ${n} of ${pdf.numPages}…`;
+    const page = await pdf.getPage(n);
+    const base = page.getViewport({scale:1});
+    const view = page.getViewport({scale:scale});
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.ceil(view.width));
+    canvas.height = Math.max(1, Math.ceil(view.height));
+    const ctx = canvas.getContext('2d', {alpha:false});
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({canvasContext:ctx, viewport:view}).promise;
+
+    const jpg = canvas.toDataURL('image/jpeg', quality);
+    const orientation = base.width > base.height ? 'landscape' : 'portrait';
+
+    if (!output) {
+      output = new jsPDF({
+        unit:'pt',
+        format:[base.width, base.height],
+        orientation,
+        compress:true
+      });
+    } else {
+      output.addPage([base.width, base.height], orientation);
+    }
+    output.addImage(jpg, 'JPEG', 0, 0, base.width, base.height, undefined, 'FAST');
+  }
+
+  return output.output('blob');
+}
+
+compressBtn.onclick = async () => {
+  const file = pdfInput.files[0];
+  if (!file) { alert('Choose a PDF first.'); return; }
+
+  const reduce = Math.max(1, Math.min(90, Number(reduceInput.value) || 50));
+  const targetKB = Number(targetInput.value);
+  const originalSize = file.size;
+
+  compressBtn.disabled = true;
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+
+    // If target KB is provided, try several quality/scale combinations and
+    // choose the smallest result that is closest to the requested target.
+    const candidates = [
+      {scale: Math.max(.45, 1-reduce/100), quality: Math.max(.45, .85-reduce/250)},
+      {scale: .70, quality:.65},
+      {scale: .60, quality:.58},
+      {scale: .50, quality:.52},
+      {scale: .45, quality:.45}
+    ];
+
+    let best = null;
+    let bestScore = Infinity;
+
+    for (const c of candidates) {
+      const b = await buildPdfFromImages(bytes, c.scale, c.quality);
+      const score = targetKB > 0
+        ? Math.abs(b.size - targetKB*1024)
+        : b.size;
+      if (!best || score < bestScore) {
+        best = b;
+        bestScore = score;
+      }
+      if (targetKB > 0 && b.size <= targetKB*1024) {
+        // Prefer a result at or below the requested target.
+        if (!best || best.size > targetKB*1024 || b.size > best.size) best = b;
+      }
+    }
+
+    const saved = Math.max(0, (1 - best.size/originalSize) * 100);
+    const before = Math.round(originalSize/1024);
+    const after = Math.round(best.size/1024);
+    const name = file.name.replace(/\.pdf$/i,'') + '-compressed.pdf';
+
+    download(best, name);
+    compressStatus.textContent =
+      `Done: ${before} KB → ${after} KB (${Math.round(saved)}% smaller).`;
+  } catch (err) {
+    console.error(err);
+    compressStatus.textContent =
+      'Compression failed. Try a smaller PDF or a different browser.';
+  } finally {
+    compressBtn.disabled = false;
+  }
+};
+</script>
+
+<script type="module">
+import * as pdfjsLibPpt from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
+
+const pdfToPptFile = document.getElementById('pdfToPptFile');
+const pdfToPptGo = document.getElementById('pdfToPptGo');
+const pdfToPptStatus = document.getElementById('pdfToPptStatus');
+
+pdfToPptGo.onclick = async () => {
+  const file = pdfToPptFile.files[0];
+  if (!file) { alert('Choose a PDF first.'); return; }
+
+  pdfToPptGo.disabled = true;
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const pdf = await pdfjsLibPpt.getDocument({data: bytes}).promise;
+    const pptx = new PptxGenJS();
+    pptx.layout = 'LAYOUT_WIDE';
+    pptx.author = 'ResizeMitra';
+    pptx.subject = 'PDF converted to PowerPoint';
+    pptx.title = file.name.replace(/\.pdf$/i,'');
+    pptx.company = 'ResizeMitra';
+    pptx.lang = 'en-US';
+    pptx.theme = {
+      headFontFace: 'Arial',
+      bodyFontFace: 'Arial',
+      lang: 'en-US'
+    };
+
+    const quality = Number(document.getElementById('pptQuality').value || 1.5);
+
+    for (let n = 1; n <= pdf.numPages; n++) {
+      pdfToPptStatus.textContent = `Converting page ${n} of ${pdf.numPages}…`;
+      const page = await pdf.getPage(n);
+
+      // Render page at a controlled resolution.
+      const base = page.getViewport({scale:1});
+      const maxPixels = 2200000;
+      let scale = quality;
+      const estimated = base.width * base.height * scale * scale;
+      if (estimated > maxPixels) scale = Math.sqrt(maxPixels/(base.width*base.height));
+      scale = Math.max(.5, scale);
+
+      const view = page.getViewport({scale});
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(view.width);
+      canvas.height = Math.ceil(view.height);
+
+      const ctx = canvas.getContext('2d', {alpha:false});
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      await page.render({canvasContext:ctx, viewport:view}).promise;
+
+      const img = canvas.toDataURL('image/jpeg', quality >= 2 ? .88 : quality >= 1.5 ? .82 : .72);
+
+      // Standard 16:9 PowerPoint slide. Fit the complete PDF page without cropping.
+      const slide = pptx.addSlide();
+      slide.background = {color:'FFFFFF'};
+      const sw = 13.333, sh = 7.5;
+      const pageRatio = base.width / base.height;
+      let w = sw, h = w / pageRatio;
+      if (h > sh) { h = sh; w = h * pageRatio; }
+      slide.addImage({data:img, x:(sw-w)/2, y:(sh-h)/2, w, h});
+    }
+
+    const outputName = file.name.replace(/\.pdf$/i,'') + '-converted.pptx';
+    await pptx.writeFile({fileName: outputName});
+    pdfToPptStatus.textContent = `Done — ${pdf.numPages} page(s) converted to PowerPoint.`;
+  } catch (err) {
+    console.error(err);
+    pdfToPptStatus.textContent =
+      'PDF → PPT conversion failed. Try a smaller PDF or another browser.';
+  } finally {
+    pdfToPptGo.disabled = false;
+  }
 };
 </script>
 
