@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ResizeMitra — Resize, Compress, Crop Images & Create PDFs Online</title>
+<meta name="description" content="Free online image and PDF tools. Resize, compress, crop and convert JPG, PNG and WebP images, create PDFs and ID photos quickly in your browser.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Aditya G. Chudhari">
+<meta property="og:title" content="ResizeMitra — Free Image & PDF Tools">
+<meta property="og:description" content="Resize, compress, crop and convert images, create ID photos and PDFs online.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://adityachudhari1-sys.github.io/ai-shop-manager/">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+<style>
+:root{--bg:#f7f8fc;--card:#fff;--ink:#151923;--muted:#697386;--line:#e7e9ef;--brand:#6c5ce7;--brand2:#00a8ff;--soft:#f0edff;--pink:#e84393;--green:#00a884;--yellow:#f4b400}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+.wrap{max-width:1050px;margin:auto;padding:0 18px}
+header{background:#fff;border-bottom:1px solid var(--line);padding:19px 0;position:sticky;top:0;z-index:5}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:15px}.logo{font-weight:900;font-size:21px;letter-spacing:-.5px}.logo i{color:#e53935;font-style:normal}.mini{font-size:12px;color:var(--muted)}
+.hero{text-align:center;padding:55px 0 28px}.eyebrow{display:inline-block;background:var(--soft);color:#c54d00;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:800}.hero h1{font-size:clamp(34px,7vw,58px);line-height:1.02;margin:15px auto 12px;letter-spacing:-2.5px;max-width:760px}.hero p{color:var(--muted);max-width:600px;margin:auto;font-size:16px;line-height:1.6}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 16px}.tool{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;cursor:pointer;color:var(--ink);transition:.15s}.tool:hover,.tool.active{border-color:#b9adff;box-shadow:0 9px 25px #1519230b;transform:translateY(-1px)}.tool b{display:block;font-size:14px}.tool small{display:block;color:var(--muted);margin-top:3px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 18px 55px #15192308}.drop{border:2px dashed #d9dce5;border-radius:16px;padding:38px 15px;text-align:center;background:#fcfcfe;cursor:pointer}.drop.drag{border-color:var(--brand);background:var(--soft)}.drop strong{font-size:17px}.drop p{margin:7px 0;color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.hidden{display:none!important}.preview{width:100%;max-height:430px;object-fit:contain;background:#f0f2f6;border-radius:13px}.cropbox{max-height:500px;overflow:hidden}.card{border:1px solid var(--line);border-radius:13px;padding:12px;margin:12px 0}.hint,.status{font-size:13px;color:var(--muted)}input,select{font:inherit;border:1px solid var(--line);border-radius:9px;padding:9px;background:#fff}button{font:inherit;border:0;border-radius:10px;padding:10px 15px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-weight:800;cursor:pointer}.secondary{background:#f0f1f5;color:var(--ink)}.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px}.check{border:1px solid var(--line);padding:10px;border-radius:10px}.ad{margin:16px 0;border:1px dashed #d8dbe4;border-radius:11px;padding:10px;text-align:center;color:#969eac;font-size:12px}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:18px 0}.feature{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.feature b{display:block;margin-bottom:5px}.feature span{font-size:13px;color:var(--muted)}
+footer{padding:30px 0 45px;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:760px){.tools{grid-template-columns:repeat(2,1fr)}.grid,.features{grid-template-columns:1fr}.hero{padding-top:40px}}
+
+.footer-inner{max-width:1050px;margin:auto;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;text-align:center}
+.copyright{display:inline-block;background:#dff5e8;color:#238653;border:1px solid #bfe7d0;border-radius:8px;padding:5px 9px;font-size:11px;font-weight:700}
+footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:9px 12px 11px}
+.copyright strong{color:#238653}
+.legal-links{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+.legal-links a{color:#fff;text-decoration:none;font-weight:800;font-size:12px;padding:7px 11px;border-radius:99px;background:#ffffff18;border:1px solid #ffffff20}
+.legal-links a:hover{background:#ffffff28}
+.legal-modal{display:none;position:fixed;inset:0;background:#101828aa;z-index:50;padding:18px;align-items:center;justify-content:center}
+.legal-box{position:relative;background:#fff;border-radius:20px;max-width:720px;width:100%;max-height:82vh;overflow:auto;padding:28px;box-shadow:0 25px 80px #0004}
+.legal-box h2{margin-top:0}.legal-box h3{margin-top:22px}.legal-box p,.legal-box li{color:#596579;line-height:1.7}
+.legal-close{position:absolute;right:15px;top:12px;background:#f0f1f5;color:#333;width:36px;height:36px;padding:0;border-radius:50%;font-size:22px}
+.tool:nth-child(1) .ico{color:#6c5ce7}.tool:nth-child(2) .ico{color:#e84393}.tool:nth-child(3) .ico{color:#00a884}.tool:nth-child(4) .ico{color:#00a8ff}.tool:nth-child(5) .ico{color:#f4b400}.tool:nth-child(6) .ico{color:#ff6b35}.tool:nth-child(7) .ico{color:#7957ff}.tool:nth-child(8) .ico{color:#18a558}
+
+.gallery{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.thumb{width:92px;height:82px;padding:5px;background:#fff;border:1px solid var(--line);border-radius:10px;color:var(--muted);cursor:pointer;overflow:hidden}.thumb.active{border:2px solid var(--brand)}.thumb img{width:100%;height:52px;object-fit:cover;border-radius:6px;display:block}.thumb span{display:block;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+
+.footer-ad-wrap{background:#f5f7fb;padding:8px 12px 5px;text-align:center}
+.footer-ad{width:min(300px,88%);height:34px;margin:0 auto;border:1px dashed #aab2c0;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8b95a5;font-size:9px;letter-spacing:.4px;background:#fff}
+.footer-inner{max-width:1050px;margin:auto;text-align:center}
+.footer-legal{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.copyright,.legal-chip{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 9px;border-radius:7px;font-size:10px;font-weight:800;text-decoration:none}
+.copyright{background:#dff5e8;color:#238653;border:1px solid #bfe7d0}
+.copyright strong{color:#238653}
+.legal-chip{border:1px solid #ffffff20;color:#fff;background:#ffffff10}
+.disclaimer-chip{background:#fff3e8;color:#b85c00;border-color:#ffd6ad}
+.privacy-chip{background:#eaf4ff;color:#2866a8;border-color:#c7e0fa}
+.terms-chip{background:#f1edff;color:#624bb0;border-color:#d8ccff}
+</style>
+
+<style>
+.seo-content{font-size:12px;line-height:1.45}
+.seo-content h2{font-size:18px;margin:0 0 8px}
+.seo-content h3{font-size:14px;margin:14px 0 5px}
+.seo-content p{font-size:12px;line-height:1.5;margin:5px 0}
+.seo-content details{font-size:12px;margin:7px 0}
+.seo-content summary{font-size:12px;cursor:pointer}
+</style>
+
+<style>
+.upload-top{margin:0 0 16px}
+.upload-top .drop{margin:0}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><div class="logo"><i>Resize</i>Mitra</div><div class="mini">Simple • Fast • Easy</div></div></header>
+<main class="wrap">
+<section class="hero">
+
+<h1>Resize images. Make PDFs. Done.</h1>
+<p>A clean, premium and easy-to-use toolkit for everyday photo and document work.</p>
+</section>
+
+<div class="upload-top">
+<section class="panel">
+<div class="drop" id="drop"><input id="files" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/bmp" hidden>
+<div style="font-size:34px">↑</div><strong>Drop your files here</strong><p>or click to browse</p></div>
+</section>
+</div>
+
+<div class="tools">
+<button class="tool active" data-tool="resize"><b>↔ Resize</b><small>Set exact pixels</small></button>
+<button class="tool" data-tool="compress"><b>◉ Compress</b><small>Reduce file size</small></button>
+<button class="tool" data-tool="crop"><b>✂ Crop</b><small>Crop your photo</small></button>
+<button class="tool" data-tool="convert"><b>⇄ Convert</b><small>JPG · PNG · WebP</small></button>
+<button class="tool" data-tool="enhance"><b>✦ Enhance</b><small>Basic photo cleanup</small></button>
+<button class="tool" data-tool="id"><b>▣ ID Photo</b><small>Pixel-size presets</small></button>
+<button class="tool" data-tool="pdf"><b>▤ Image → PDF</b><small>Multiple images</small></button>
+<button class="tool" data-tool="office"><b>▥ Office → PDF</b><small>Word · PPT · Excel</small></button>
+</div>
+
+<div class="ad">ADVERTISEMENT</div>
+<section class="panel">
+<div id="workspace" class="hidden">
+<div class="card row"><b id="info"></b><button class="secondary" id="clear">Clear</button></div>
+<div id="gallery" class="gallery"></div>
+
+<div id="resize">
+<h3>Resize Image</h3>
+<div class="row"><label>Width <input id="w" type="number" min="1"></label><label>Height <input id="h" type="number" min="1"></label></div>
+<div class="row"><label>Width % <input id="wp" type="number" min="1" max="500" value="100"></label><label>Height % <input id="hp" type="number" min="1" max="500" value="100"></label></div>
+<p><label><input id="ratio" type="checkbox" checked> Keep aspect ratio</label></p>
+<p class="hint">Enter pixels or percentage manually. 50% makes the image half its original size; 200% doubles it.</p>
+<div class="grid"><div><button id="resizeGo">Download JPG</button></div><img id="preview" class="preview"></div>
+</div>
+
+<div id="compress" class="hidden"><h3>Compress Image</h3>
+<p class="hint">Enter your target file size manually in KB, or use quality.</p>
+<div class="row">
+<label>Target size <input id="targetKB" type="number" min="1" step="1" placeholder="e.g. 100"> KB</label>
+<label>Quality <input id="quality" type="range" min=".1" max="1" step=".05" value=".7"></label>
+<span id="qv">70%</span>
+</div>
+<p class="hint">If Target size is entered, ResizeMitra will try to make the JPEG file close to that size.</p>
+<p><button id="compressGo">Compress & Download</button></p></div>
+
+<div id="crop" class="hidden"><h3>Crop Image</h3>
+<div class="row"><select id="aspect"><option value="free">Free</option><option value="1">1 : 1</option><option value="1.333333">4 : 3</option><option value="1.5">3 : 2</option><option value=".75">3 : 4</option></select></div>
+<div class="row"><label>X % <input id="cx" type="number" min="0" max="100" value="10"></label><label>Y % <input id="cy" type="number" min="0" max="100" value="10"></label><label>Width % <input id="cw" type="number" min="1" max="100" value="80"></label><label>Height % <input id="ch" type="number" min="1" max="100" value="80"></label></div>
+<p class="hint">You can use the crop box or enter X, Y, Width and Height manually as percentages of the original photo.</p>
+<div class="row"><button id="cropApply">Apply manual crop</button><button id="cropGo">Download JPG</button></div><div class="cropbox"><img id="cropImage"></div></div>
+
+<div id="convert" class="hidden"><h3>Convert Image</h3><div class="row"><select id="format"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select><button id="convertGo">Convert & Download</button></div></div>
+
+<div id="enhance" class="hidden"><h3>Enhance Photo</h3><div class="grid"><div><p>Brightness <input id="br" type="range" min="-100" max="100" value="0"></p><p>Contrast <input id="co" type="range" min="-100" max="100" value="0"></p><p>Saturation <input id="sa" type="range" min="-100" max="100" value="0"></p><button id="enhanceGo">Download Enhanced</button></div><canvas id="enhanceCanvas"></canvas></div></div>
+
+<div id="id" class="hidden"><h3>ID / Pixel Photo</h3><p class="hint">Generic pixel presets. Check the exact requirement of your application before submission.</p><div class="checks"><label class="check"><input type="radio" name="px" value="413x531" checked> 413 × 531</label><label class="check"><input type="radio" name="px" value="600x600"> 600 × 600</label><label class="check"><input type="radio" name="px" value="354x472"> 354 × 472</label><label class="check"><input type="radio" name="px" value="300x400"> 300 × 400</label></div><p><button id="idGo">Create ID Photo</button></p></div>
+
+<div id="pdf" class="hidden"><h3>Images → PDF</h3><div class="row"><select id="page"><option>A4</option><option>Letter</option></select><select id="orientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select><button id="pdfGo">Create PDF</button></div></div>
+
+<div id="office" class="hidden"><h3>Word / PowerPoint / Excel → PDF</h3><p class="hint">Conversion uses LibreOffice on your own server/computer.</p><input id="officeFiles" type="file" multiple accept=".doc,.docx,.ppt,.pptx,.xls,.xlsx"><p><button id="officeGo">Convert to PDF</button></p><div id="officeStatus" class="status"></div></div>
+<div class="status" id="status"></div>
+</div>
+</section>
+
+
+<section class="seo-content" style="margin:22px 0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px">
+  <h2>Free Online Image & PDF Tools</h2>
+  <p>ResizeMitra helps you resize, compress, crop and convert images directly in your browser. You can also create ID-size photos and combine images into a PDF without installing desktop software.</p>
+  <div class="grid">
+    <div>
+      <h3>Resize and compress images</h3>
+      <p>Set exact width and height in pixels or resize by percentage. Compress JPEG images by quality or try to reach a target file size such as 100 KB.</p>
+    </div>
+    <div>
+      <h3>Convert and create PDFs</h3>
+      <p>Convert between JPG, PNG and WebP, create ID photos using pixel presets, and turn multiple images into an A4 or Letter PDF.</p>
+    </div>
+  </div>
+  <h3>Frequently Asked Questions</h3>
+  <details><summary><b>Are my images uploaded to a server?</b></summary><p>Browser-based image tools on this page process selected images locally in the browser.</p></details>
+  <details><summary><b>Can I resize an image to exact pixels?</b></summary><p>Yes. Enter the required width and height in pixels and use the Resize Image tool.</p></details>
+  <details><summary><b>Can I compress an image to a target KB size?</b></summary><p>Yes. Enter a target size in KB and ResizeMitra will try to produce a JPEG close to that size.</p></details>
+  <details><summary><b>Can I make an image into a PDF?</b></summary><p>Yes. Select multiple images, choose A4 or Letter and choose portrait or landscape orientation.</p></details>
+</section>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"ResizeMitra",
+  "applicationCategory":"MultimediaApplication",
+  "operatingSystem":"Web Browser",
+  "description":"Online tools for resizing, compressing, cropping and converting images and creating PDFs.",
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+}
+</script>
+
+<section class="features">
+<div class="feature"><b>Private by design</b><span>Image tools process files locally in your browser.</span></div>
+<div class="feature"><b>Simple interface</b><span>No complicated settings or unnecessary steps.</span></div>
+<div class="feature"><b>Free to start</b><span>Ready for optional ads and premium features later.</span></div>
+</section>
+<div class="footer-ad-wrap"><div class="footer-ad">ADVERTISEMENT</div></div>
+<footer>
+<div class="footer-inner">
+  <div class="footer-legal">
+    <div class="copyright">© 2026 ResizeMitra</div>
+    <a class="legal-chip disclaimer-chip" href="#disclaimer" onclick="openLegal('disclaimer');return false">Disclaimer</a>
+    <a class="legal-chip privacy-chip" href="#privacy" onclick="openLegal('privacy');return false">Privacy</a>
+    <a class="legal-chip terms-chip" href="#terms" onclick="openLegal('terms');return false">Terms</a>
+  </div>
+</div>
+</footer>
+
+<div id="legalModal" class="legal-modal" onclick="if(event.target===this)closeLegal()">
+ <div class="legal-box">
+  <button class="legal-close" onclick="closeLegal()">×</button>
+  <div id="legalContent"></div>
+ </div>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let files=[], activeIndex=0, img=null, cropper=null;
+const drop=$('#drop'), input=$('#files');
+
+drop.onclick=e=>{if(e.target!==input)input.click()};
+['dragenter','dragover'].forEach(x=>drop.addEventListener(x,e=>{e.preventDefault();drop.classList.add('drag')}));
+['dragleave','drop'].forEach(x=>drop.addEventListener(x,e=>{e.preventDefault();drop.classList.remove('drag')}));
+drop.addEventListener('drop',e=>load([...e.dataTransfer.files]));
+input.onchange=e=>load([...e.target.files]);
+
+function load(a){
+  files=a.filter(f=>f && f.type && f.type.startsWith('image/'));
+  $('#workspace').classList.toggle('hidden',!files.length);
+  $('#info').textContent=files.length+' image(s) selected';
+  renderGallery();
+  if(files.length) selectImage(0);
+  if(a.length && !files.length) $('#info').textContent='No browser-supported image selected. JPG, PNG, WebP and GIF work best.';
+}
+function renderGallery(){
+  const g=$('#gallery'); g.innerHTML='';
+  files.forEach((f,i)=>{
+    const item=document.createElement('button'); item.type='button'; item.className='thumb'+(i===activeIndex?' active':'');
+    const im=document.createElement('img'); im.alt=f.name; im.src=URL.createObjectURL(f);
+    const cap=document.createElement('span'); cap.textContent=(i+1)+'. '+f.name;
+    item.append(im,cap); item.onclick=()=>selectImage(i); g.appendChild(item);
+  });
+}
+async function selectImage(i){
+  activeIndex=i; renderGallery();
+  const f=files[i]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    img=new Image();
+    img.onload=()=>{
+      $('#preview').src=r.result;
+      $('#w').value=img.naturalWidth; $('#h').value=img.naturalHeight;
+      $('#wp').value=100; $('#hp').value=100;
+      setupCrop(r.result); drawEnhance();
+      $('#status').textContent=f.name+' • '+img.naturalWidth+' × '+img.naturalHeight+' px';
+    };
+    img.onerror=()=>$('#status').textContent='This image format cannot be displayed by Chrome.';
+    img.src=r.result;
+  };
+  r.readAsDataURL(f);
+}
+function setupCrop(src){
+  if(cropper)cropper.destroy();
+  $('#cropImage').src=src;
+  cropper=new Cropper($('#cropImage'),{viewMode:1,autoCropArea:.8,responsive:true});
+}
+function activate(n){
+  $$('.tool').forEach(x=>x.classList.toggle('active',x.dataset.tool===n));
+  ['resize','compress','crop','convert','enhance','id','pdf','office'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==n));
+}
+$$('.tool').forEach(x=>x.onclick=()=>activate(x.dataset.tool));
+
+$('#clear').onclick=()=>{
+  files=[];input.value='';$('#workspace').classList.add('hidden');
+  $('#gallery').innerHTML='';if(cropper)cropper.destroy();img=null;
+};
+$('#w').oninput=()=>{
+  if(!img)return;
+  $('#wp').value=Math.max(1,Math.round(+$('#w').value/img.naturalWidth*100));
+  if($('#ratio').checked){$('#h').value=Math.round(+$('#w').value*img.naturalHeight/img.naturalWidth);$('#hp').value=$('#wp').value}
+};
+$('#h').oninput=()=>{
+  if(!img)return;
+  $('#hp').value=Math.max(1,Math.round(+$('#h').value/img.naturalHeight*100));
+  if($('#ratio').checked){$('#w').value=Math.round(+$('#h').value*img.naturalWidth/img.naturalHeight);$('#wp').value=$('#hp').value}
+};
+$('#wp').oninput=()=>{
+  if(!img)return;
+  $('#w').value=Math.max(1,Math.round(img.naturalWidth*+$('#wp').value/100));
+  if($('#ratio').checked){$('#hp').value=$('#wp').value;$('#h').value=Math.max(1,Math.round(img.naturalHeight*+$('#hp').value/100))}
+};
+$('#hp').oninput=()=>{
+  if(!img)return;
+  $('#h').value=Math.max(1,Math.round(img.naturalHeight*+$('#hp').value/100));
+  if($('#ratio').checked){$('#wp').value=$('#hp').value;$('#w').value=Math.max(1,Math.round(img.naturalWidth*+$('#wp').value/100))}
+};
+
+function makeCanvas(w=img.naturalWidth,h=img.naturalHeight,filter='none'){
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));
+  const x=c.getContext('2d');x.filter=filter;x.drawImage(img,0,0,c.width,c.height);x.filter='none';return c;
+}
+function blob(c,t='image/jpeg',q=.92){return new Promise(r=>c.toBlob(r,t,q))}
+function download(b,n){
+  if(!b)return;
+  const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=n;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);
+}
+
+$('#resizeGo').onclick=async()=>{
+  if(!img)return alert('Select a photo first.');
+  const c=makeCanvas(+$('#w').value,+$('#h').value);download(await blob(c),'resized.jpg');
+};
+$('#quality').oninput=e=>$('#qv').textContent=Math.round(e.target.value*100)+'%';
+$('#compressGo').onclick=async()=>{
+  if(!img)return alert('Select a photo first.');
+  const targetKB=parseFloat($('#targetKB').value);
+  const c=makeCanvas();
+  if(!targetKB || targetKB<=0){
+    download(await blob(c,'image/jpeg',+$('#quality').value),'compressed.jpg');
+    return;
+  }
+  const target=targetKB*1024;
+  let lo=.01,hi=1,best=null;
+  // Find the highest quality that is at or below the requested target.
+  for(let i=0;i<12;i++){
+    const q=(lo+hi)/2, b=await blob(c,'image/jpeg',q);
+    if(b.size<=target){best=b;lo=q}else{hi=q}
+  }
+  if(!best){
+    // Even minimum JPEG quality is larger than target; return the smallest result.
+    best=await blob(c,'image/jpeg',.01);
+    $('#status').textContent='Minimum JPEG quality is still '+Math.ceil(best.size/1024)+' KB; target was '+targetKB+' KB.';
+  }else{
+    $('#status').textContent='Compressed to about '+Math.ceil(best.size/1024)+' KB (target '+targetKB+' KB).';
+  }
+  download(best,'compressed-'+targetKB+'KB.jpg');
+};
+$('#aspect').onchange=e=>cropper&&cropper.setAspectRatio(e.target.value==='free'?NaN:+e.target.value);
+$('#cropApply').onclick=()=>{
+  if(!cropper||!img)return;
+  const x=Math.max(0,Math.min(100,+$('#cx').value))/100,y=Math.max(0,Math.min(100,+$('#cy').value))/100;
+  const w=Math.max(.01,Math.min(100,+$('#cw').value))/100,h=Math.max(.01,Math.min(100,+$('#ch').value))/100;
+  const data=cropper.getData();
+  cropper.setData({x:x*img.naturalWidth,y:y*img.naturalHeight,width:w*img.naturalWidth,height:h*img.naturalHeight});
+  $('#status').textContent='Manual crop applied: '+$('#cx').value+'%, '+$('#cy').value+'%, '+$('#cw').value+'% × '+$('#ch').value+'%';
+};
+$('#cropGo').onclick=async()=>{if(!cropper)return alert('Select a photo first.');download(await blob(cropper.getCroppedCanvas(),'image/jpeg',.94),'cropped.jpg')};
+$('#convertGo').onclick=async()=>{
+  if(!img)return alert('Select a photo first.');
+  const t=$('#format').value, ext=t==='image/png'?'png':t==='image/webp'?'webp':'jpg';
+  download(await blob(makeCanvas(),t,.92),'converted.'+ext);
+};
+function drawEnhance(){
+  if(!img)return;let c=$('#enhanceCanvas');c.width=img.naturalWidth;c.height=img.naturalHeight;
+  let x=c.getContext('2d'),br=+$('#br').value,co=+$('#co').value,sa=+$('#sa').value;
+  x.filter=`brightness(${100+br}%) contrast(${100+co}%) saturate(${100+sa}%)`;x.drawImage(img,0,0);x.filter='none';
+}
+['br','co','sa'].forEach(x=>$('#'+x).oninput=drawEnhance);
+$('#enhanceGo').onclick=async()=>{if(img)download(await blob($('#enhanceCanvas')),'enhanced.jpg')};
+$('#idGo').onclick=async()=>{
+  if(!img)return alert('Select a photo first.');
+  let [w,h]=document.querySelector('input[name=px]:checked').value.split('x').map(Number);
+  download(await blob(makeCanvas(w,h)),'id-photo-'+w+'x'+h+'.jpg');
+};
+function read(f){return new Promise((r,j)=>{let x=new FileReader();x.onload=()=>r(x.result);x.onerror=j;x.readAsDataURL(f)})}
+function image(s){return new Promise((r,j)=>{let i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=s})}
+$('#pdfGo').onclick=async()=>{
+  const a=files;if(!a.length)return alert('Select image files first.');
+  const {jsPDF}=window.jspdf,p=new jsPDF({format:$('#page').value,orientation:$('#orientation').value,unit:'mm'});
+  for(let n=0;n<a.length;n++){
+    if(n)p.addPage($('#page').value,$('#orientation').value);
+    const d=await read(a[n]),i=await image(d),pw=p.internal.pageSize.getWidth(),ph=p.internal.pageSize.getHeight(),m=8;
+    const s=Math.min((pw-2*m)/i.naturalWidth,(ph-2*m)/i.naturalHeight),w=i.naturalWidth*s,h=i.naturalHeight*s;
+    p.addImage(d,'JPEG',(pw-w)/2,(ph-h)/2,w,h);
+  }p.save('images.pdf');
+};
+$('#officeGo').onclick=async()=>{
+  let a=[...$('#officeFiles').files];if(!a.length)return alert('Choose Office files');
+  let fd=new FormData();a.forEach(f=>fd.append('files',f));$('#officeStatus').textContent='Converting…';
+  try{let r=await fetch('/api/office-to-pdf',{method:'POST',body:fd});if(!r.ok)throw Error(await r.text());download(await r.blob(),'converted.pdf');$('#officeStatus').textContent='PDF ready.'}
+  catch(e){$('#officeStatus').textContent='Conversion unavailable: '+e.message}
+};
+</script>
+
+<script>
+const legalText={
+privacy:`<h2>Privacy Policy</h2>
+<p><b>Last updated: 2026</b></p>
+<p>ResizeMitra is designed to provide simple file tools. Browser-based image processing can take place directly in your browser.</p>
+<h3>Files</h3><p>Images selected for browser tools are processed by the browser. Users should not select files they are not authorized to process.</p>
+<h3>Information</h3><p>This standalone page does not require an account for its core tools. If analytics, advertising, contact forms, hosting logs or third-party services are introduced, this policy should be updated to accurately describe them.</p>
+<h3>Security</h3><p>No software can guarantee absolute security. Keep your browser and device updated.</p>`,
+terms:`<h2>Terms of Use</h2>
+<p><b>Last updated: 2026</b></p>
+<p>Use ResizeMitra only for lawful purposes and only with files you have permission to process.</p>
+<h3>Your responsibility</h3><p>You are responsible for checking generated files before using them for government, employment, education, commercial, legal or other official purposes.</p>
+<h3>Availability</h3><p>Features and availability may change. Output quality can vary by browser, file format and source file.</p>
+<h3>Rights</h3><p>Do not use ResizeMitra to infringe copyright, privacy, intellectual-property rights or other legal rights.</p>`,
+disclaimer:`<h2>Disclaimer</h2>
+<p><b>Last updated: 2026</b></p>
+<p>ResizeMitra is a general-purpose file utility and does not provide legal, medical, financial, immigration or other professional advice.</p>
+<h3>Official requirements</h3><p>Photo and document requirements vary by organization and may change. Always verify the current requirements of the authority receiving your file.</p>
+<h3>Output</h3><p>Check dimensions, quality, formatting and PDF output before submitting or publishing a file.</p>
+<p>This disclaimer is a general website template and is not a substitute for legal advice.</p>`
+};
+function openLegal(type){document.getElementById('legalContent').innerHTML=legalText[type];document.getElementById('legalModal').style.display='flex'}
+function closeLegal(){document.getElementById('legalModal').style.display='none'}
+</script>
+
+</body></html>
