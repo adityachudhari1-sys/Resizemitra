@@ -3,15 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ResizeMitra — Resize, Compress, Crop Images & Create PDFs Online</title>
-<meta name="description" content="Free online image and PDF tools. Resize, compress, crop and convert JPG, PNG and WebP images, create PDFs and ID photos quickly in your browser.">
+<title>ResizeTool — Resize, Compress, Crop Images & Create PDFs Online</title>
+<meta name="description" content="ResizeTool offers free online tools to resize, compress, crop and convert JPG, PNG and WebP images, create PDFs and ID photos, compress PDFs, and convert common Office files in your browser.">
 <meta name="robots" content="index,follow">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<meta name="theme-color" content="#6c5ce7">
+<meta property="og:url" content="https://resizemitra.in/">
+<meta property="og:site_name" content="ResizeTool">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:title" content="ResizeTool — Free Image & PDF Tools">
+<meta name="twitter:description" content="Resize, compress, crop and convert images, create PDFs and ID photos online.">
+
 <meta name="author" content="Aditya G. Chudhari">
-<meta property="og:title" content="ResizeMitra — Free Image & PDF Tools">
+<meta property="og:title" content="ResizeTool — Free Image & PDF Tools">
 <meta property="og:description" content="Resize, compress, crop and convert images, create ID photos and PDFs online.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<link rel="canonical" href="https://adityachudhari1-sys.github.io/ai-shop-manager/">
+<link rel="canonical" href="https://resizemitra.in/">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
 <style>
 :root{--bg:#f7f8fc;--card:#fff;--ink:#151923;--muted:#697386;--line:#e7e9ef;--brand:#6c5ce7;--brand2:#00a8ff;--soft:#f0edff;--pink:#e84393;--green:#00a884;--yellow:#f4b400}
@@ -68,26 +76,9 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 .upload-top{margin:0 0 16px}
 .upload-top .drop{margin:0}
 </style>
-<style>
-.contact-chip{
-  background:#e8fff4;
-  color:#168457;
-  border-color:#bfe8d2;
-}
-</style>
-
-
-<style id="contact-colour">
-.contact-chip{
-  background:#f3e8ff !important;
-  color:#7c3aed !important;
-  border-color:#d8b4fe !important;
-}
-</style>
-
 </head>
 <body>
-<header><div class="wrap nav"><div class="logo"><i>Resize</i>Mitra</div><div class="mini">Simple • Fast • Easy</div></div></header>
+<header><div class="wrap nav"><div class="logo"><i>Resize</i>Tool</div><div class="mini">Simple • Fast • Easy</div></div></header>
 <main class="wrap">
 <section class="hero">
 
@@ -98,7 +89,7 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 <div class="upload-top">
 <section class="panel">
 <div class="drop" id="drop"><input id="files" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/bmp,application/pdf,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" hidden>
-<div style="font-size:34px">↑</div><strong>Drop your files here</strong><p>or click to browse</p></div>
+<div style="font-size:34px">↑</div><strong>Drop your files here</strong><p>or click to browse • Files are processed in your browser when supported</p></div>
 </section>
 </div>
 
@@ -137,7 +128,7 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 <label>Quality <input id="quality" type="range" min=".1" max="1" step=".05" value=".7"></label>
 <span id="qv">70%</span>
 </div>
-<p class="hint">If Target size is entered, ResizeMitra will try to make the JPEG file close to that size.</p>
+<p class="hint">If Target size is entered, ResizeTool will try to make the JPEG file close to that size.</p>
 <p><button id="compressGo">Compress & Download</button></p></div>
 
 <div id="crop" class="hidden"><h3>Crop Image</h3>
@@ -160,28 +151,18 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 <p><button id="officeGo">Convert to PDF</button></p>
 <div id="officeStatus" class="status"></div></div>
 <div id="pdfcompress" class="hidden"><h3>Compress PDF</h3>
-<p class="hint">Fast browser compression. Choose quality and optionally set a maximum target size.</p>
+<p class="hint">Compress one PDF directly in your browser. This works especially well for scanned/photo PDFs. Text/vector PDFs may have limited size reduction. The browser version rebuilds pages as images, so searchable text and some original PDF features may not be preserved.</p>
+<div class="row"><label>PDF file <input id="pdfCompressFile" type="file" accept="application/pdf"></label></div>
 <div class="row">
-  <label>PDF file <input id="pdfCompressFile" type="file" accept=".pdf,application/pdf"></label>
+<label>Reduce by <input id="pdfReduce" type="number" min="1" max="90" value="50"> %</label>
+<label>Target size <input id="pdfTargetKB" type="number" min="1" step="1" placeholder="Optional KB"> KB</label>
 </div>
-<div class="row">
-  <label>Quality
-    <select id="pdfQuality">
-      <option value="fast" selected>Fast — recommended</option>
-      <option value="high">High quality</option>
-      <option value="small">Smallest size</option>
-    </select>
-  </label>
-  <label>Target KB
-    <input id="pdfTargetKB" type="number" min="10" step="1" placeholder="Optional">
-  </label>
-</div>
-<p class="hint">Target KB is optional. Without a target, ResizeMitra performs one fast compression pass.</p>
-<p><button id="pdfCompressGo">Compress PDF</button></p>
+<p class="hint">Enter a percentage for automatic compression, or enter a target size in KB. If both are entered, the target KB is used.</p>
+<p><button id="pdfCompressGo">Compress & Download PDF</button></p>
 <div class="status" id="pdfCompressStatus"></div>
 </div>
 <div id="pdftoppt" class="hidden"><h3>PDF → PowerPoint</h3>
-<p class="hint">Convert each PDF page into a PowerPoint slide. The slide preserves the page appearance as an image, making this suitable for scanned documents and PDFs with mixed content.</p>
+<p class="hint">Convert each PDF page into a PowerPoint slide. The slide preserves the page appearance as an image, making this suitable for scanned documents and PDFs with mixed content. Each PDF page is placed on a PowerPoint slide as an image, so the slide appearance is preserved but the original PDF text is not converted into editable PowerPoint text.</p>
 <div class="row"><label>PDF file <input id="pdfToPptFile" type="file" accept="application/pdf"></label></div>
 <div class="row"><label>Image quality <select id="pptQuality"><option value="1.5">Standard</option><option value="2">High</option><option value="1">Smaller file</option></select></label>
 <button id="pdfToPptGo">Convert & Download PPT</button></div>
@@ -192,9 +173,24 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 </section>
 
 
+<section class="seo-landing-links" style="margin:22px 0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px">
+  <h2 style="font-size:18px;margin:0 0 10px">Popular ResizeTool Tools</h2>
+  <p style="font-size:13px;color:var(--muted);line-height:1.6">Use a dedicated tool for common image and PDF tasks.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+<a class="seo-tool-link" href="#resize" data-active-tool="resize">Resize Image Online</a>
+<a class="seo-tool-link" href="#compress" data-active-tool="compress">Compress Image Online</a>
+<a class="seo-tool-link" href="#compress" data-active-tool="compress" data-target-kb="20">Resize Image to 20KB Online | ResizeTool</a>
+<a class="seo-tool-link" href="#compress" data-active-tool="compress" data-target-kb="50">Resize Image to 50KB Online | ResizeTool</a>
+<a class="seo-tool-link" href="#compress" data-active-tool="compress" data-target-kb="100">Resize Image to 100KB Online | ResizeTool</a>
+<a class="seo-tool-link" href="#compress" data-active-tool="compress" data-target-kb="100">Compress Image to 100KB Online | ResizeTool</a>
+<a class="seo-tool-link" href="#pdf" data-active-tool="pdf">JPG to PDF Converter Online</a>
+<a class="seo-tool-link" href="#pdfcompress" data-active-tool="pdfcompress">Compress PDF Online</a>
+<a class="seo-tool-link" href="#pdftoppt" data-active-tool="pdftoppt">PDF to PowerPoint Converter Online | ResizeTool</a>
+<a class="seo-tool-link" href="#id" data-active-tool="id">ID Photo Resizer Online</a></div>
+</section>
 <section class="seo-content" style="margin:22px 0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px">
   <h2>Free Online Image & PDF Tools</h2>
-  <p>ResizeMitra helps you resize, compress, crop and convert images directly in your browser. You can also create ID-size photos and combine images into a PDF without installing desktop software.</p>
+  <p>ResizeTool helps you resize, compress, crop and convert images directly in your browser. You can also create ID-size photos and combine images into a PDF without installing desktop software.</p>
   <div class="grid">
     <div>
       <h3>Resize and compress images</h3>
@@ -208,20 +204,36 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
   <h3>Frequently Asked Questions</h3>
   <details><summary><b>Are my images uploaded to a server?</b></summary><p>Browser-based image tools on this page process selected images locally in the browser.</p></details>
   <details><summary><b>Can I resize an image to exact pixels?</b></summary><p>Yes. Enter the required width and height in pixels and use the Resize Image tool.</p></details>
-  <details><summary><b>Can I compress an image to a target KB size?</b></summary><p>Yes. Enter a target size in KB and ResizeMitra will try to produce a JPEG close to that size.</p></details>
+  <details><summary><b>Can I compress an image to a target KB size?</b></summary><p>Yes. Enter a target size in KB and ResizeTool will try to produce a JPEG close to that size.</p></details>
   <details><summary><b>Can I make an image into a PDF?</b></summary><p>Yes. Select multiple images, choose A4 or Letter and choose portrait or landscape orientation.</p></details>
 </section>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@type":"WebApplication",
-  "name":"ResizeMitra",
+  "name":"ResizeTool",
   "applicationCategory":"MultimediaApplication",
   "operatingSystem":"Web Browser",
-  "description":"Online tools for resizing, compressing, cropping and converting images and creating PDFs.",
+  "description":"Free online tools for resizing, compressing, cropping and converting images, creating PDFs and ID photos.",
   "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebSite",
+  "name":"ResizeTool",
+  "url":"https://resizemitra.in/",
+  "description":"Free online image and PDF tools."
+}
+</script>
+
+
+
+<style>
+.seo-tool-link{display:inline-flex;align-items:center;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);text-decoration:none;font-weight:700;font-size:12px}
+.seo-tool-link:hover{border-color:#b9adff;box-shadow:0 5px 15px #1519230b}
+</style>
 
 <section class="features">
 <div class="feature"><b>Private by design</b><span>Image tools process files locally in your browser.</span></div>
@@ -232,11 +244,10 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 <footer>
 <div class="footer-inner">
   <div class="footer-legal">
-    <div class="copyright">© 2026 ResizeMitra</div>
-    <a class="legal-chip contact-chip" href="mailto:adityachudhari01@gmail.com">Contact</a>
+    <div class="copyright">© 2026 ResizeTool</div>
     <a class="legal-chip disclaimer-chip" href="#disclaimer" onclick="openLegal('disclaimer');return false">Disclaimer</a>
     <a class="legal-chip privacy-chip" href="#privacy" onclick="openLegal('privacy');return false">Privacy</a>
-    <a class="legal-chip terms-chip" href="#terms" onclick="openLegal('terms');return false">Terms</a>
+    <a class="legal-chip terms-chip" href="#terms" onclick="openLegal('terms');return false">Terms</a><a class="legal-chip" href="mailto:adityachudhari1@gmail.com">Contact</a>
   </div>
 </div>
 </footer>
@@ -254,7 +265,7 @@ footer{background:linear-gradient(135deg,#161a2d,#25204d);color:#e8eaf2;padding:
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module"></script>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 let files=[], activeIndex=0, img=null, cropper=null;
@@ -359,6 +370,20 @@ function activate(n){
   ['resize','compress','crop','convert','enhance','id','pdf','office','pdfcompress','pdftoppt'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==n));
 }
 $$('.tool').forEach(x=>x.onclick=()=>activate(x.dataset.tool));
+$$('.seo-tool-link[data-active-tool]').forEach(link=>{
+  link.onclick=e=>{
+    e.preventDefault();
+    const tool=link.dataset.activeTool;
+    activate(tool);
+    $('#workspace').classList.remove('hidden');
+    if(tool==='compress' && link.dataset.targetKb){
+      $('#targetKB').value=link.dataset.targetKb;
+      $('#quality').value='.7';
+      $('#qv').textContent='70%';
+    }
+    document.querySelector('.panel:last-of-type')?.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+});
 
 $('#clear').onclick=()=>{
   files=[];input.value='';$('#workspace').classList.add('hidden');
@@ -566,210 +591,207 @@ $('#officeGo').onclick=async()=>{
 };
 </script>
 
+<script type="module">
+import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 
+const pdfInput = document.getElementById('pdfCompressFile');
+const reduceInput = document.getElementById('pdfReduce');
+const targetInput = document.getElementById('pdfTargetKB');
+const compressBtn = document.getElementById('pdfCompressGo');
+const compressStatus = document.getElementById('pdfCompressStatus');
 
+async function buildPdfFromImages(pdfBytes, scale, quality) {
+  const pdf = await pdfjsLib.getDocument({data: pdfBytes}).promise;
+  const {jsPDF} = window.jspdf;
+  let output = null;
 
-
-<script>
-/* ResizeMitra PDF Compressor — single-pass, fast, consistent implementation */
-(function(){
-  const fileInput = document.getElementById('pdfCompressFile');
-  const qualityInput = document.getElementById('pdfQuality');
-  const targetInput = document.getElementById('pdfTargetKB');
-  const button = document.getElementById('pdfCompressGo');
-  const status = document.getElementById('pdfCompressStatus');
-
-  const profiles = {
-    fast:  {scale:0.62, quality:0.58},
-    high:  {scale:0.95, quality:0.84},
-    small: {scale:0.48, quality:0.42}
-  };
-
-  if(!fileInput || !qualityInput || !targetInput || !button || !status) return;
-
-  if(window.pdfjsLib){
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  }
-
-  function nextFrame(){
-    return new Promise(r=>requestAnimationFrame(()=>r()));
-  }
-
-  async function renderPage(page, profile){
+  for (let n = 1; n <= pdf.numPages; n++) {
+    compressStatus.textContent = `Compressing page ${n} of ${pdf.numPages}…`;
+    const page = await pdf.getPage(n);
     const base = page.getViewport({scale:1});
+    const view = page.getViewport({scale:scale});
 
-    // Cap pixels for fast processing on mobile.
-    const maxPixels = 900000;
-    let scale = profile.scale;
-    const wanted = base.width * base.height * scale * scale;
-    if(wanted > maxPixels){
-      scale *= Math.sqrt(maxPixels / wanted);
-    }
-    scale = Math.max(0.30, scale);
-
-    const viewport = page.getViewport({scale});
     const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.ceil(viewport.width));
-    canvas.height = Math.max(1, Math.ceil(viewport.height));
-
+    canvas.width = Math.max(1, Math.ceil(view.width));
+    canvas.height = Math.max(1, Math.ceil(view.height));
     const ctx = canvas.getContext('2d', {alpha:false});
     ctx.fillStyle = '#fff';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({canvasContext:ctx, viewport:view}).promise;
 
-    await page.render({
-      canvasContext:ctx,
-      viewport:viewport
-    }).promise;
+    const jpg = canvas.toDataURL('image/jpeg', quality);
+    const orientation = base.width > base.height ? 'landscape' : 'portrait';
 
-    const data = canvas.toDataURL('image/jpeg', profile.quality);
-
-    // Release the canvas pixels immediately after encoding.
-    canvas.width = 1;
-    canvas.height = 1;
-
-    return {data, width:base.width, height:base.height};
+    if (!output) {
+      output = new jsPDF({
+        unit:'pt',
+        format:[base.width, base.height],
+        orientation,
+        compress:true
+      });
+    } else {
+      output.addPage([base.width, base.height], orientation);
+    }
+    output.addImage(jpg, 'JPEG', 0, 0, base.width, base.height, undefined, 'FAST');
   }
 
-  async function createPdf(file, profile){
-    if(!window.pdfjsLib || !window.jspdf){
-      throw new Error('PDF engine failed to load. Refresh the page.');
-    }
+  return output.output('blob');
+}
 
+compressBtn.onclick = async () => {
+  const file = pdfInput.files[0];
+  if (!file) { alert('Choose a PDF first.'); return; }
+
+  const reduce = Math.max(1, Math.min(90, Number(reduceInput.value) || 50));
+  const targetKB = Number(targetInput.value);
+  const originalSize = file.size;
+
+  compressBtn.disabled = true;
+  try {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    const pdf = await pdfjsLib.getDocument({
-      data:bytes,
-      disableAutoFetch:false,
-      disableStream:false
-    }).promise;
 
-    const {jsPDF} = window.jspdf;
-    let result = null;
+    // If target KB is provided, try several quality/scale combinations and
+    // choose the smallest result that is closest to the requested target.
+    const candidates = [
+      {scale: Math.max(.45, 1-reduce/100), quality: Math.max(.45, .85-reduce/250)},
+      {scale: .70, quality:.65},
+      {scale: .60, quality:.58},
+      {scale: .50, quality:.52},
+      {scale: .45, quality:.45}
+    ];
 
-    for(let n=1;n<=pdf.numPages;n++){
-      status.textContent = `Fast compression: ${n}/${pdf.numPages}`;
-      await nextFrame();
+    let best = null;
+    let bestScore = Infinity;
 
-      const page = await pdf.getPage(n);
-      const r = await renderPage(page,profile);
-      const orientation = r.width >= r.height ? 'landscape' : 'portrait';
-
-      if(!result){
-        result = new jsPDF({
-          unit:'pt',
-          format:[r.width,r.height],
-          orientation:orientation,
-          compress:true
-        });
-      }else{
-        result.addPage([r.width,r.height],orientation);
+    for (const c of candidates) {
+      const b = await buildPdfFromImages(bytes, c.scale, c.quality);
+      const score = targetKB > 0
+        ? Math.abs(b.size - targetKB*1024)
+        : b.size;
+      if (!best || score < bestScore) {
+        best = b;
+        bestScore = score;
       }
-
-      result.addImage(
-        r.data,'JPEG',0,0,r.width,r.height,
-        undefined,'FAST'
-      );
-
-      page.cleanup();
+      if (targetKB > 0 && b.size <= targetKB*1024) {
+        // Prefer a result at or below the requested target.
+        if (!best || best.size > targetKB*1024 || b.size > best.size) best = b;
+      }
     }
 
-    return result.output('blob');
+    const saved = Math.max(0, (1 - best.size/originalSize) * 100);
+    const before = Math.round(originalSize/1024);
+    const after = Math.round(best.size/1024);
+    const name = file.name.replace(/\.pdf$/i,'') + '-compressed.pdf';
+
+    download(best, name);
+    compressStatus.textContent =
+      `Done: ${before} KB → ${after} KB (${Math.round(saved)}% smaller).`;
+  } catch (err) {
+    console.error(err);
+    compressStatus.textContent =
+      'Compression failed. Try a smaller PDF or a different browser.';
+  } finally {
+    compressBtn.disabled = false;
   }
+};
+</script>
 
-  button.addEventListener('click', async function(){
-    const file = fileInput.files && fileInput.files[0];
+<script type="module">
+import * as pdfjsLibPpt from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 
-    if(!file){
-      alert('Choose a PDF first.');
-      return;
+const pdfToPptFile = document.getElementById('pdfToPptFile');
+const pdfToPptGo = document.getElementById('pdfToPptGo');
+const pdfToPptStatus = document.getElementById('pdfToPptStatus');
+
+pdfToPptGo.onclick = async () => {
+  const file = pdfToPptFile.files[0];
+  if (!file) { alert('Choose a PDF first.'); return; }
+
+  pdfToPptGo.disabled = true;
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const pdf = await pdfjsLibPpt.getDocument({data: bytes}).promise;
+    const pptx = new PptxGenJS();
+    pptx.layout = 'LAYOUT_WIDE';
+    pptx.author = 'ResizeTool';
+    pptx.subject = 'PDF converted to PowerPoint';
+    pptx.title = file.name.replace(/\.pdf$/i,'');
+    pptx.company = 'ResizeTool';
+    pptx.lang = 'en-US';
+    pptx.theme = {
+      headFontFace: 'Arial',
+      bodyFontFace: 'Arial',
+      lang: 'en-US'
+    };
+
+    const quality = Number(document.getElementById('pptQuality').value || 1.5);
+
+    for (let n = 1; n <= pdf.numPages; n++) {
+      pdfToPptStatus.textContent = `Converting page ${n} of ${pdf.numPages}…`;
+      const page = await pdf.getPage(n);
+
+      // Render page at a controlled resolution.
+      const base = page.getViewport({scale:1});
+      const maxPixels = 2200000;
+      let scale = quality;
+      const estimated = base.width * base.height * scale * scale;
+      if (estimated > maxPixels) scale = Math.sqrt(maxPixels/(base.width*base.height));
+      scale = Math.max(.5, scale);
+
+      const view = page.getViewport({scale});
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(view.width);
+      canvas.height = Math.ceil(view.height);
+
+      const ctx = canvas.getContext('2d', {alpha:false});
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      await page.render({canvasContext:ctx, viewport:view}).promise;
+
+      const img = canvas.toDataURL('image/jpeg', quality >= 2 ? .88 : quality >= 1.5 ? .82 : .72);
+
+      // Standard 16:9 PowerPoint slide. Fit the complete PDF page without cropping.
+      const slide = pptx.addSlide();
+      slide.background = {color:'FFFFFF'};
+      const sw = 13.333, sh = 7.5;
+      const pageRatio = base.width / base.height;
+      let w = sw, h = w / pageRatio;
+      if (h > sh) { h = sh; w = h * pageRatio; }
+      slide.addImage({data:img, x:(sw-w)/2, y:(sh-h)/2, w, h});
     }
 
-    if(file.size > 80 * 1024 * 1024){
-      if(!confirm('This PDF is larger than 80 MB and may take time on a phone. Continue?'))
-        return;
-    }
-
-    button.disabled = true;
-    const oldText = button.textContent;
-    button.textContent = 'Compressing…';
-
-    try{
-      const original = file.size;
-      const mode = profiles[qualityInput.value] ? qualityInput.value : 'fast';
-
-      status.textContent = 'Reading PDF…';
-      await nextFrame();
-
-      let blob = await createPdf(file,profiles[mode]);
-
-      /*
-       * Optional target mode: one extra pass only.
-       * This is intentionally limited to keep the tool fast.
-       */
-      const targetKB = Number(targetInput.value);
-      if(Number.isFinite(targetKB) &&
-         targetKB >= 10 &&
-         blob.size > targetKB*1024){
-
-        status.textContent = 'Applying stronger compression for target…';
-        await nextFrame();
-
-        const stronger =
-          targetKB*1024 < original*0.40
-            ? {scale:0.38,quality:0.36}
-            : {scale:0.50,quality:0.46};
-
-        const second = await createPdf(file,stronger);
-        if(second.size < blob.size) blob = second;
-      }
-
-      if(blob.size >= original){
-        status.textContent =
-          'No size reduction was possible with this PDF without stronger quality loss.';
-        return;
-      }
-
-      const beforeKB = original/1024;
-      const afterKB = blob.size/1024;
-      const saved = Math.round((1-blob.size/original)*100);
-
-      download(
-        blob,
-        file.name.replace(/\.pdf$/i,'')+'-compressed.pdf'
-      );
-
-      status.textContent =
-        `Done: ${Math.round(beforeKB)} KB → ${Math.round(afterKB)} KB ` +
-        `(${saved}% smaller)`;
-    }catch(err){
-      console.error('ResizeMitra PDF compression error:',err);
-      status.textContent =
-        'Compression failed: '+(err.message || 'Unknown error');
-    }finally{
-      button.disabled = false;
-      button.textContent = oldText;
-    }
-  });
-})();
+    const outputName = file.name.replace(/\.pdf$/i,'') + '-converted.pptx';
+    await pptx.writeFile({fileName: outputName});
+    pdfToPptStatus.textContent = `Done — ${pdf.numPages} page(s) converted to PowerPoint.`;
+  } catch (err) {
+    console.error(err);
+    pdfToPptStatus.textContent =
+      'PDF → PPT conversion failed. Try a smaller PDF or another browser.';
+  } finally {
+    pdfToPptGo.disabled = false;
+  }
+};
 </script>
 
 <script>
 const legalText={
 privacy:`<h2>Privacy Policy</h2>
 <p><b>Last updated: 2026</b></p>
-<p>ResizeMitra is designed to provide simple file tools. Browser-based image processing can take place directly in your browser.</p>
-<h3>Files</h3><p>Images selected for browser tools are processed by the browser. Users should not select files they are not authorized to process.</p>
-<h3>Information</h3><p>This standalone page does not require an account for its core tools. If analytics, advertising, contact forms, hosting logs or third-party services are introduced, this policy should be updated to accurately describe them.</p>
+<p>ResizeTool provides browser-based file tools. For tools that process files locally, the selected files are processed on your device and are not intentionally uploaded by ResizeTool.</p>
+<h3>Files and processing</h3><p>When a tool operates in your browser, your selected file is handled locally by the browser. You are responsible for using files you have permission to process. Some future or server-based features may require a file to be transmitted for processing; those features should clearly explain this before use.</p>
+<h3>Information we may receive</h3><p>The standalone core tools do not require an account. Depending on services enabled on the live website, normal hosting logs, security information, analytics, advertising technologies or contact messages may be processed. This policy should be kept updated whenever such services are added.</p>
+<h3>Cookies and advertising</h3><p>If advertising or analytics services are enabled, those services may use cookies or similar technologies according to their own policies. ResizeTool will not claim that such services are absent when they are enabled.</p>
+<h3>Contact</h3><p>For questions about this website, contact <a href="mailto:adityachudhari1@gmail.com">adityachudhari1@gmail.com</a>.</p>
 <h3>Security</h3><p>No software can guarantee absolute security. Keep your browser and device updated.</p>`,
 terms:`<h2>Terms of Use</h2>
 <p><b>Last updated: 2026</b></p>
-<p>Use ResizeMitra only for lawful purposes and only with files you have permission to process.</p>
+<p>Use ResizeTool only for lawful purposes and only with files you have permission to process.</p>
 <h3>Your responsibility</h3><p>You are responsible for checking generated files before using them for government, employment, education, commercial, legal or other official purposes.</p>
 <h3>Availability</h3><p>Features and availability may change. Output quality can vary by browser, file format and source file.</p>
-<h3>Rights</h3><p>Do not use ResizeMitra to infringe copyright, privacy, intellectual-property rights or other legal rights.</p>`,
+<h3>Rights</h3><p>Do not use ResizeTool to infringe copyright, privacy, intellectual-property rights or other legal rights.</p>`,
 disclaimer:`<h2>Disclaimer</h2>
 <p><b>Last updated: 2026</b></p>
-<p>ResizeMitra is a general-purpose file utility and does not provide legal, medical, financial, immigration or other professional advice.</p>
+<p>ResizeTool is a general-purpose file utility and does not provide legal, medical, financial, immigration or other professional advice.</p>
 <h3>Official requirements</h3><p>Photo and document requirements vary by organization and may change. Always verify the current requirements of the authority receiving your file.</p>
 <h3>Output</h3><p>Check dimensions, quality, formatting and PDF output before submitting or publishing a file.</p>
 <p>This disclaimer is a general website template and is not a substitute for legal advice.</p>`
